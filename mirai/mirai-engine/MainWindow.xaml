@@ -4,13 +4,41 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:mirai_engine"
+        
         mc:Ignorable="d"
-        Title="MainWindow" Height="625" Width="1111.111" Loaded="Window_Loaded">
-    <Grid Background="#FF36393F">
-        <Rectangle Fill="#FF2F3136" HorizontalAlignment="Left" Height="35" VerticalAlignment="Top" Width="1103" Stroke="Black"/>
-        <Menu IsMainMenu="True" Height="23" VerticalAlignment="Top" Background="{x:Null}" Margin="10,6,98,0" OpacityMask="Black" Foreground="#FFF05BFF" >
+        Title="MainWindow" Height="727.511" Width="1349.022" Loaded="Window_Loaded">
+
+
+
+    <Grid Background="#FF36393F" Margin="0,0,2,-3">
+        <Rectangle Fill="#FF2F3136" HorizontalAlignment="Left" Height="641" VerticalAlignment="Top" Width="342" Margin="987,28,0,0"/>
+        <TreeView x:Name="FolderView" Margin="989,40,10,117" Background="#FF2F3136" BorderBrush="{x:Null}" Foreground="{x:Null}">
+            <TreeView.Resources>
+
+                <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="{x:Static SystemColors.HighlightColor}" />
+                <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="#FFF05BFF" />
+
+                <Style TargetType="{x:Type TreeViewItem}">
+                    <Setter Property="HeaderTemplate">
+                        <Setter.Value>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+
+                                    <TextBlock VerticalAlignment="Center" Text="{Binding}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TreeView.Resources>
+        </TreeView>
+
+        <Rectangle Fill="#FF2F3136" HorizontalAlignment="Left" Height="28" VerticalAlignment="Top" Width="1339" Stroke="Black"/>
+       
+        <Menu IsMainMenu="True" Height="23" VerticalAlignment="Top" Background="{x:Null}" Margin="10,3,98,0" OpacityMask="Black" Foreground="#FFF05BFF" >
+            
             <MenuItem Header="_File" Margin="0,1" Foreground="#FFF05BFF" Background="{x:Null}">
-                <MenuItem Header="_New Project" Background="#FF202225" />
+                <MenuItem Header="_New Project" Background="#FF202225" Foreground="#FFF05BFF" />
                 <MenuItem Header="_Open Project"  Click="OpenProject_Click" Background="#FF202225"/>
                 <MenuItem x:Name="SaveMenu" Header="_Save Project" IsEnabled="False" Background="#FF202225" />
                 <MenuItem x:Name="SaveAsMenu" Header="_Save Project As"  IsEnabled="False" Background="#FF202225"/>
@@ -28,11 +56,11 @@
             <MenuItem Header="_Help" Margin="10,1,0,1" Foreground="#FFF05BFF" >
                 <MenuItem Header="Support" Background="#FF202225" />
             </MenuItem>
+            
         </Menu>
-        <Border BorderThickness="1" HorizontalAlignment="Left" Height="540" Margin="856,35,0,0" VerticalAlignment="Top" Width="247" Background="#FF2F3136"/>
         <Button
                 HorizontalAlignment="Right"
-                Margin="0,6,64,0"
+                Margin="0,2,64,0"
                 VerticalAlignment="Top"
              
                 Background="#FFF7ABFF" BorderBrush="{x:Null}" Foreground="{x:Null}">
@@ -45,10 +73,10 @@
         </Button>
         <Button
                 HorizontalAlignment="Right"
-                Margin="0,6,35,0"
+                Margin="0,2,35,0"
                 VerticalAlignment="Top"
               
-                Background="#FFF7ABFF" Foreground="{x:Null}">
+                Background="#FFF7ABFF" Foreground="{x:Null}" BorderBrush="{x:Null}">
             <TextBlock
                     TextWrapping="Wrap"
                     Text="1"
@@ -58,7 +86,7 @@
         </Button>
         <Button
                 HorizontalAlignment="Right"
-                Margin="0,6,8,0"
+                Margin="0,2,8,0"
                 VerticalAlignment="Top"
 
               
@@ -70,6 +98,6 @@
                     Foreground="#FF2F3136"
                     FontSize="16" />
         </Button>
-        <TextBox x:Name="ConsoleTextBox" HorizontalAlignment="Left" Height="89" Margin="10,486,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="841" BorderBrush="{x:Null}" Background="#FF484B52"/>
+        <TextBox x:Name="ConsoleTextBox" HorizontalAlignment="Left" Height="89" Margin="10,580,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="967" BorderBrush="{x:Null}" Background="#FF484B52"/>
     </Grid>
 </Window>
