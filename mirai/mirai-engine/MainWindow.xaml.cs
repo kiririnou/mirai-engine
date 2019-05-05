@@ -17,6 +17,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml;
 using System.IO;
+
 using Path = System.IO.Path;
 
 namespace mirai_engine
@@ -28,6 +29,19 @@ namespace mirai_engine
     {
         string ProjectFile;
         string RootDir;
+
+        MiraiVn Mirai;
+        DebugWindow debugWindow;
+
+        public struct fileContent
+        {
+            public string dir { get; set; }
+            public string path { get; set; }
+        }
+
+        List <fileContent> BgContent = new List<fileContent>();
+
+        List<fileContent> SpriteContent = new List<fileContent>();
 
         //hide window title bar
         #region
@@ -52,16 +66,18 @@ namespace mirai_engine
 
         private void OpenProject_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog storyFileLocation = new OpenFileDialog();
+            OpenFileDialog FileLocation = new OpenFileDialog();
            
-            storyFileLocation.ShowDialog();
+            FileLocation.ShowDialog();
 
-            if (storyFileLocation.FileName.CompareTo("") != 0)
+            if (FileLocation.FileName.CompareTo("") != 0)
             {
-                ProjectFile = storyFileLocation.FileName;
+                ProjectFile = FileLocation.FileName;
                 RootDir = ProjectFile.Substring(0, ProjectFile.LastIndexOf("\\"));
 
-                ShowDir(RootDir);               
+                ShowDir(RootDir);
+
+                Mirai = new MiraiVn(ProjectFile, BgContent, SpriteContent);
             }
         }
         
@@ -75,14 +91,34 @@ namespace mirai_engine
                     Header = Path.GetFileName(drive),
                     // And the full path
                     Tag = drive
-                };
+                };               
 
                 // Add a dummy item
                 item.Items.Add(null);
 
                 // Listen out for item being expanded
-                item.Expanded += Folder_Expanded;
-     
+                item.KeyDown += Folder_Expanded;
+
+                //Separate file 
+                DirectoryInfo dir = new DirectoryInfo(drive);
+                FileInfo[] Files = dir.GetFiles();
+
+                if(Path.GetFileName(drive) == "Bg")
+                {
+                    foreach(var file in Files)
+                    {
+                        BgContent.Add(new fileContent { dir = Path.GetFileName(drive), path = file.FullName });
+                    }
+                }
+
+                else if(Path.GetFileName(drive) == "Sprite")
+                {
+                    foreach(var file in Files)
+                    {
+                        SpriteContent.Add(new fileContent { dir = Path.GetFileName(drive), path = file.FullName });
+                    }
+                }
+              
                 FolderView.Items.Add(item);
             }
         }
@@ -158,7 +194,7 @@ namespace mirai_engine
                 {
                     Header = GetFileFolderName(filePath),
                     Tag = filePath
-                };
+                };               
 
                 item.Items.Add(subItem);
             });
@@ -198,12 +234,13 @@ namespace mirai_engine
 
         private void Degug_Click(object sender, RoutedEventArgs e)
         {
-
+            debugWindow = new DebugWindow(Mirai, ProjectFile, BgContent, SpriteContent);
+            debugWindow.Show();        
         }
 
         private void StopDebug_Click(object sender, RoutedEventArgs e)
         {
-
+            
         }       
     }
 }

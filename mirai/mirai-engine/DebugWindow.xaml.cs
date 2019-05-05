@@ -23,97 +23,150 @@ namespace mirai_engine
     /// </summary>
     public partial class DebugWindow : Window
     {
-        MiraiVn vn;
-        List<MainWindow.fileContent> VnContent = new List<MainWindow.fileContent>();
-      
-        public struct ParsedText
-        {
-            public string CharName { get; set; }
-            public string Dialoge { get; set; }
-        }
+        MiraiVn mirai;
+        List<MainWindow.fileContent> BgContent = new List<MainWindow.fileContent>();
+        List<MainWindow.fileContent> SpriteContent = new List<MainWindow.fileContent>();
+        string VnPath;
+        string[] ProjectLines;      
 
-        protected List<ParsedText> parsedtext = new List<ParsedText>();
+        //temp window resouces
+        List<MiraiVn.vnContent> DialogueVn = new List<MiraiVn.vnContent>();
+        string[] VnSprite = new string[10];
+        string VnBg;
 
-        //temp values
-        string ImgPath;
-        string TextPath;        
+        int LineReaded;
 
-        public DebugWindow(MiraiVn novel, List<MainWindow.fileContent> content)
+        public DebugWindow(MiraiVn novel, string path, List<MainWindow.fileContent> bg,List<MainWindow.fileContent> sprite)
         {
             InitializeComponent();
 
-            vn = novel;
-            VnContent = content;
+            mirai = novel;
+            VnPath = path;
+            BgContent = bg;
+            SpriteContent = sprite;
+            LineReaded = 0;
 
             //temp values
-            ImgPath = VnContent[0].Path;
-            TextPath = VnContent[1].Path;
+            //ImgPath = VnContent[0].Path;
+            //TextPath = VnContent[1].Path;
 
-            LoadText();
-          
+            LoadNovel();
+
+            //LoadText();
+
             StartNovel();
+        }      
+
+        void LoadNovel()
+        {
+            string[] lines = File.ReadAllLines(VnPath);
+            int count = 0;
+
+            ProjectLines = new string[lines.Length];
+            
+            //filter
+            foreach (string line in lines)
+            {
+                if(line!="")
+                {
+                    ProjectLines[count] = line;
+                    count++;
+                }
+            }
+
+            string tempCommand="val";
+            
+            while(tempCommand!=null||tempCommand!="...")
+            {
+                tempCommand = ProjectLines[LineReaded];
+                Console.WriteLine();               
+                if (tempCommand.Contains("new-scene"))
+                {
+                    LineReaded++;
+                    mirai.SetResources(ref ProjectLines, ref LineReaded, ref VnSprite, ref VnBg, ref DialogueVn);
+                }      
+                else
+                {
+                    break;
+                }
+            }
         }
 
         void StartNovel()
         {
-            BitmapImage bmImage = new BitmapImage();
-            bmImage.BeginInit();        
-            bmImage.UriSource = new Uri(ImgPath, UriKind.Absolute);
-            bmImage.EndInit();            
-            background.Source = bmImage;                  
+            BitmapImage bgImage = new BitmapImage();
+            bgImage.BeginInit();        
+            bgImage.UriSource = new Uri(VnBg, UriKind.Absolute);
+            bgImage.EndInit();            
+            backgroundImg.Source = bgImage;
+
+            BitmapImage sprite1Image = new BitmapImage();
+            sprite1Image.BeginInit();
+            sprite1Image.UriSource = new Uri(VnSprite[0], UriKind.Absolute);
+            sprite1Image.EndInit();
+            spriteImg1.Source = sprite1Image;
+
+            BitmapImage sprite2Image = new BitmapImage();
+            sprite2Image.BeginInit();
+            sprite2Image.UriSource = new Uri(VnSprite[1], UriKind.Absolute);
+            sprite2Image.EndInit();
+            spriteImg2.Source = sprite2Image;
         }
 
-        protected int count;
+        protected int count = 0;
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            NameTextBox.Clear();
-            NameTextBox.AppendText(parsedtext[count].CharName);
-
-            if (count > 0 && parsedtext[count].CharName != parsedtext[count - 1].CharName)
+            if (count < DialogueVn.Count)
             {
-                TextBox.Clear();
-            }
+                NameTextBox.Clear();
+                NameTextBox.AppendText(DialogueVn[count].CharName);
 
-            //link lines
-
-            else if (parsedtext[count].Dialoge.Contains("/"))
-            {          
-                TextBox.AppendText(" ");
-            }
-
-            TextBox.AppendText(parsedtext[count].Dialoge.Replace("/", ""));
-
-            count++;
-        }
-
-        void LoadText()
-        {
-            //set default read position
-            count = 0;
-
-            StreamReader reader = new StreamReader(TextPath);
-
-            string str = reader.ReadToEnd();
-
-            //remove empty lines
-            str = Regex.Replace(str, @"^\s+$[\r\n]*", string.Empty, RegexOptions.Multiline);
-
-            string[] Dialoge = Regex.Split(str, "\r\n");
-
-            string tempNameStr = null;
-
-            foreach (var line in Dialoge)
-            {
-                if (line.StartsWith("~"))
+                if (count > 0 && DialogueVn[count].CharName != DialogueVn[count - 1].CharName)
                 {
-                    tempNameStr = line.Remove(0, 1);
+                    TextBox.Clear();
                 }
+
+                //link lines
+
                 else
                 {
-                    parsedtext.Add(new ParsedText() { CharName = tempNameStr, Dialoge = line });
+                    TextBox.AppendText(" ");
                 }
+
+                TextBox.AppendText(DialogueVn[count].Dialogue);
+
+                count++;
             }
-        }      
+        }
+
+        //void LoadText()
+        //{
+        //    //set default read position
+        //    count = 0;
+
+        //    StreamReader reader = new StreamReader(VnPath);
+
+        //    string str = reader.ReadToEnd();
+
+        //    //remove empty lines
+        //    str = Regex.Replace(str, @"^\s+$[\r\n]*", string.Empty, RegexOptions.Multiline);
+
+        //    string[] Dialoge = Regex.Split(str, "\r\n");
+
+        //    string tempNameStr = null;
+
+        //    foreach (var line in Dialoge)
+        //    {
+        //        if (line.StartsWith("~"))
+        //        {
+        //            tempNameStr = line.Remove(0, 1);
+        //        }
+        //        else
+        //        {
+        //            parsedtext.Add(new ParsedText() { CharName = tempNameStr, Dialoge = line });
+        //        }
+        //    }
+    
     }
 }

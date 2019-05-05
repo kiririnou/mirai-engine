@@ -1,0 +1,47 @@
+new-scene
+
+
+#Add bg=3bg
+
+#Add sprite=nico
+
+#Add sprite=bernkastel1
+
+#Add name=Nico
+#Add text=Physicist,Metaphysician, Poet, duellistand, musician, And Voyager to the Heavens
+#Add text=Master of how to answer-back
+
+#Add name=Bernkastel
+#Add text=A Lover too - but not to his gain! 
+#Add text=Here lies Hercule Savinien
+
+
+#Add name=Nico
+#Add text=De Cyrano de Bergerac, Who was all things, and all in vain
+
+new-scene
+
+#Add bg=1bg
+#Add sprite=bernkastel1
+
+#Add name=Berkastel
+#Add text=Humans don’t know what death is. And yet humans know about it, 
+#Add text=and because humans know about death, they learn to lose themselves in their happiness
+#Add text=Despair is a privilege only given to those who can lose themselves in happiness.
+
+#Add text=~clear
+
+#Add text=What privilege? That sounds terrible, no matter how I look at it.
+#Add text=Yeah, it does. But that’s why people took up words.
+#Add text=We talk about how the sky is beautiful.
+#Add text=We pray for the world to become a better place.
+
+#Add text=~clear
+
+#Add text=We use these three things to obtain these wonderful days.
+#Add text=Don’t lose yourselves in happiness. Don’t despair at the world.
+#Add text=Just be happy… something like that.
+
+
+
+
