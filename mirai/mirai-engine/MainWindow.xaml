@@ -50,8 +50,8 @@
                 <MenuItem Header="_Paste" Command="Paste" Background="#FF202225"/>
             </MenuItem>
             <MenuItem Header="_Start" Margin="10,1,0,1" Foreground="#FFF05BFF">
-                <MenuItem x:Name="DebugMenu" Header="_Debug"  IsEnabled="False" Background="#FF202225" Click="Degug_Click"/>
-                <MenuItem x:Name="StopMenu" Header="_Stop"  IsEnabled="False" Background="#FF202225" Click="StopDebug_Click"/>
+                <MenuItem x:Name="DebugMenu" Header="_Debug"  IsEnabled="True" Background="#FF202225" Click="Degug_Click"/>
+                <MenuItem x:Name="StopMenu" Header="_Stop"  IsEnabled="True" Background="#FF202225" Click="StopDebug_Click"/>
             </MenuItem>
             <MenuItem Header="_Help" Margin="10,1,0,1" Foreground="#FFF05BFF" >
                 <MenuItem Header="Support" Background="#FF202225" />

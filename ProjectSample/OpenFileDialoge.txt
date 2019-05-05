@@ -1,0 +1,25 @@
+new-scene
+
+
+#Add bg=2bg
+
+#Add sprite=nico
+
+#Add sprite=bernkastel1
+
+#Add name=Nico
+#Add text=Physicist,Metaphysician, Poet, duellistand, musician, And Voyager to the Heavens
+#Add text=Master of how to answer-back
+
+#Add name=Bernkastel
+#Add text=A Lover too - but not to his gain! 
+#Add text=Here lies Hercule Savinien
+
+
+#Add name=Nico
+#Add text=De Cyrano de Bergerac, Who was all things, and all in vain
+...
+...
+
+
+

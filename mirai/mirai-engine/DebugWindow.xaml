@@ -1,0 +1,17 @@
+﻿<Window x:Class="mirai_engine.DebugWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:mirai_engine"
+        mc:Ignorable="d"
+        Title="DebugWindow" Height="450" Width="673.041" KeyDown="Window_KeyDown">
+    <Grid>
+        <Image x:Name="backgroundImg" HorizontalAlignment="Left" Height="420" VerticalAlignment="Top" Width="666"/>
+        <Image x:Name="spriteImg1" HorizontalAlignment="Left" Height="287" Margin="10,123,0,0" VerticalAlignment="Top" Width="287"/>
+        <Image x:Name="spriteImg2" HorizontalAlignment="Left" Height="287" Margin="368,123,0,0" VerticalAlignment="Top" Width="287"/>
+        <Rectangle Fill="Black" HorizontalAlignment="Left" Height="95" Margin="0,325,0,0" VerticalAlignment="Top" Width="666" Opacity="0.5"/>
+        <TextBox x:Name="TextBox" HorizontalAlignment="Left" Height="71" Margin="10,339,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="645" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White"/>
+        <TextBox x:Name="NameTextBox" HorizontalAlignment="Left" Height="23" Margin="10,297,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White"/>
+    </Grid>
+</Window>
