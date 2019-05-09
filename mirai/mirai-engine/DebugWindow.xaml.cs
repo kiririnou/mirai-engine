@@ -46,45 +46,41 @@ namespace mirai_engine
             SpriteContent = sprite;
             LineReaded = 0;
 
-            //temp values
-            //ImgPath = VnContent[0].Path;
-            //TextPath = VnContent[1].Path;
-
-            LoadNovel();
-
-            //LoadText();
-
-            StartNovel();
+            LoadNovel();          
         }      
 
         void LoadNovel()
         {
-            string[] lines = File.ReadAllLines(VnPath);
-            int count = 0;
-
-            ProjectLines = new string[lines.Length];
-            
-            //filter
-            foreach (string line in lines)
+            if (LineReaded == 0)
             {
-                if(line!="")
+                string[] lines = File.ReadAllLines(VnPath);
+                int count = 0;
+                ProjectLines = new string[lines.Length];
+
+                //filter
+                foreach (string line in lines)
                 {
-                    ProjectLines[count] = line;
-                    count++;
+                    if (line != "")
+                    {
+                        ProjectLines[count] = line;
+                        count++;
+                    }
                 }
             }
 
             string tempCommand="val";
             
-            while(tempCommand!=null||tempCommand!="...")
+            while(tempCommand!=null)
             {
                 tempCommand = ProjectLines[LineReaded];
-                Console.WriteLine();               
-                if (tempCommand.Contains("new-scene"))
-                {
+             
+                if (tempCommand.Equals("new-scene"))
+                {                   
                     LineReaded++;
                     mirai.SetResources(ref ProjectLines, ref LineReaded, ref VnSprite, ref VnBg, ref DialogueVn);
-                }      
+
+                    StartNovel();
+                }                                  
                 else
                 {
                     break;
@@ -94,79 +90,135 @@ namespace mirai_engine
 
         void StartNovel()
         {
+            dialogueCount = 0;
+
             BitmapImage bgImage = new BitmapImage();
             bgImage.BeginInit();        
             bgImage.UriSource = new Uri(VnBg, UriKind.Absolute);
             bgImage.EndInit();            
             backgroundImg.Source = bgImage;
 
-            BitmapImage sprite1Image = new BitmapImage();
-            sprite1Image.BeginInit();
-            sprite1Image.UriSource = new Uri(VnSprite[0], UriKind.Absolute);
-            sprite1Image.EndInit();
-            spriteImg1.Source = sprite1Image;
-
-            BitmapImage sprite2Image = new BitmapImage();
-            sprite2Image.BeginInit();
-            sprite2Image.UriSource = new Uri(VnSprite[1], UriKind.Absolute);
-            sprite2Image.EndInit();
-            spriteImg2.Source = sprite2Image;
-        }
-
-        protected int count = 0;
-
-        private void Window_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (count < DialogueVn.Count)
+            if (VnSprite[0] != null)
             {
-                NameTextBox.Clear();
-                NameTextBox.AppendText(DialogueVn[count].CharName);
+                BitmapImage sprite1Image = new BitmapImage();
+                sprite1Image.BeginInit();
+                sprite1Image.UriSource = new Uri(VnSprite[0], UriKind.Absolute);
+                sprite1Image.EndInit();
+                SpriteImg1.Source = sprite1Image;
+            }
+            else
+            {
+                SpriteImg1.Source = null;
+            }
 
-                if (count > 0 && DialogueVn[count].CharName != DialogueVn[count - 1].CharName)
-                {
-                    TextBox.Clear();
-                }
-
-                //link lines
-
-                else
-                {
-                    TextBox.AppendText(" ");
-                }
-
-                TextBox.AppendText(DialogueVn[count].Dialogue);
-
-                count++;
+            if (VnSprite[1] != null)
+            {
+                BitmapImage sprite2Image = new BitmapImage();
+                sprite2Image.BeginInit();
+                sprite2Image.UriSource = new Uri(VnSprite[1], UriKind.Absolute);
+                sprite2Image.EndInit();
+                SpriteImg2.Source = sprite2Image;
+            }
+            else
+            {
+                SpriteImg2.Source = null;
             }
         }
 
-        //void LoadText()
-        //{
-        //    //set default read position
-        //    count = 0;
+        protected int dialogueCount;
 
-        //    StreamReader reader = new StreamReader(VnPath);
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (dialogueCount < DialogueVn.Count)
+            {
+                //handle text
+                if (!DialogueVn[dialogueCount].ContentName.Contains("#"))
+                {
+                    NovelText(DialogueVn[dialogueCount].ContentName, DialogueVn[dialogueCount].ContentText);
+                    dialogueCount++;
+                }
+                //handle events
+                else if (DialogueVn[dialogueCount].ContentName.Contains("#"))
+                {
+                    NovelEvent(DialogueVn[dialogueCount].ContentName, DialogueVn[dialogueCount].ContentText);               
+                    dialogueCount++;
+                }
+            }           
+            else
+            {
+                //load new scene
+                if (ProjectLines[LineReaded+1] != null)
+                {
+                    NameTextBox.Clear();
+                    TextBox.Clear();
 
-        //    string str = reader.ReadToEnd();
+                    DialogueVn.Clear();
+                    VnSprite[0] = null;
+                    VnSprite[1] = null;
 
-        //    //remove empty lines
-        //    str = Regex.Replace(str, @"^\s+$[\r\n]*", string.Empty, RegexOptions.Multiline);
+                    LineReaded++;
+                    LoadNovel();
+                }
+            }
+        }
+        
+        void NovelText(string name, string text)
+        {
+            NameTextBox.Clear();
+            NameTextBox.AppendText(name);
 
-        //    string[] Dialoge = Regex.Split(str, "\r\n");
+            if (dialogueCount > 0 && name != DialogueVn[dialogueCount - 1].ContentName)
+            {
+                TextBox.Clear();
+            }
+            else
+            {
+                TextBox.AppendText(" ");
+            }
 
-        //    string tempNameStr = null;
+            TextBox.AppendText(DialogueVn[dialogueCount].ContentText);        
+        }
 
-        //    foreach (var line in Dialoge)
-        //    {
-        //        if (line.StartsWith("~"))
-        //        {
-        //            tempNameStr = line.Remove(0, 1);
-        //        }
-        //        else
-        //        {
-        //            parsedtext.Add(new ParsedText() { CharName = tempNameStr, Dialoge = line });
-        //        }
-        //    }
-    
+        void NovelEvent(string commandName,string commandTemp)
+        {
+            switch (commandName)
+            {
+                case ("#Hide"):
+                    {
+                        if (commandTemp.Equals("1"))
+                        {
+                            SpriteImg1.Source = null;
+                        }
+                        else if (commandTemp.Equals("2"))
+                        {
+                            SpriteImg2.Source = null;
+                        }
+                        break;
+                    }
+                case ("#Show1"):
+                    {
+                        int pos = Int32.Parse(commandTemp);
+
+                        BitmapImage sprite1Image = new BitmapImage();
+                        sprite1Image.BeginInit();
+                        sprite1Image.UriSource = new Uri(VnSprite[pos-1], UriKind.Absolute);
+                        sprite1Image.EndInit();
+                        SpriteImg1.Source = sprite1Image;
+                        break;
+                    }
+                case ("#Show2"):
+                    {
+                        int pos = Int32.Parse(commandTemp);
+
+                        BitmapImage sprite2Image = new BitmapImage();
+                        sprite2Image.BeginInit();
+                        sprite2Image.UriSource = new Uri(VnSprite[pos-1], UriKind.Absolute);
+                        sprite2Image.EndInit();
+                        SpriteImg2.Source = sprite2Image;
+                        break;
+                    }
+            }
+        }
+
     }
 }

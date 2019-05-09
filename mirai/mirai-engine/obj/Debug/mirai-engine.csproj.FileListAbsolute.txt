@@ -45,3 +45,5 @@ C:\Users\R2\Desktop\prog\git\mirai-engine\mirai\mirai-engine\obj\Debug\mirai-eng
 C:\Users\R2\Desktop\prog\git\mirai-engine\mirai\mirai-engine\obj\Debug\mirai-engine.csproj.CoreCompileInputs.cache
 C:\Users\R2\Desktop\prog\git\mirai-engine\mirai\mirai-engine\obj\Debug\mirai-engine.exe
 C:\Users\R2\Desktop\prog\git\mirai-engine\mirai\mirai-engine\obj\Debug\mirai-engine.pdb
+C:\Users\R2\Desktop\prog\с#\my\mirai-engine\mirai\mirai-engine\obj\Debug\DebugWindow.g.cs
+C:\Users\R2\Desktop\prog\с#\my\mirai-engine\mirai\mirai-engine\obj\Debug\DebugWindow.baml

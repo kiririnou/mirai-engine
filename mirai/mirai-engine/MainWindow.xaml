@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:mirai_engine"
         
         mc:Ignorable="d"
-        Title="MainWindow" Height="727.511" Width="1349.022" Loaded="Window_Loaded">
+        Title="MainWindow" Height="728" Width="1349" Loaded="Window_Loaded">
 
 
 
@@ -33,10 +33,10 @@
             </TreeView.Resources>
         </TreeView>
 
-        <Rectangle Fill="#FF2F3136" HorizontalAlignment="Left" Height="28" VerticalAlignment="Top" Width="1339" Stroke="Black"/>
-       
+        <Rectangle Fill="#FF2F3136" HorizontalAlignment="Left" Height="43" VerticalAlignment="Top" Width="1352" Stroke="Black" Margin="-5,-15,-8,0"/>
+
         <Menu IsMainMenu="True" Height="23" VerticalAlignment="Top" Background="{x:Null}" Margin="10,3,98,0" OpacityMask="Black" Foreground="#FFF05BFF" >
-            
+
             <MenuItem Header="_File" Margin="0,1" Foreground="#FFF05BFF" Background="{x:Null}">
                 <MenuItem Header="_New Project" Background="#FF202225" Foreground="#FFF05BFF" />
                 <MenuItem Header="_Open Project"  Click="OpenProject_Click" Background="#FF202225"/>
@@ -56,14 +56,14 @@
             <MenuItem Header="_Help" Margin="10,1,0,1" Foreground="#FFF05BFF" >
                 <MenuItem Header="Support" Background="#FF202225" />
             </MenuItem>
-            
+
         </Menu>
         <Button
                 HorizontalAlignment="Right"
                 Margin="0,2,64,0"
                 VerticalAlignment="Top"
              
-                Background="#FFF7ABFF" BorderBrush="{x:Null}" Foreground="{x:Null}">
+                Background="#FFF7ABFF" BorderBrush="{x:Null}" Foreground="{x:Null}" Click="MinimizateButton_Click">
             <TextBlock
                     TextWrapping="Wrap"
                     Text="0"
@@ -76,7 +76,7 @@
                 Margin="0,2,35,0"
                 VerticalAlignment="Top"
               
-                Background="#FFF7ABFF" Foreground="{x:Null}" BorderBrush="{x:Null}">
+                Background="#FFF7ABFF" Foreground="{x:Null}" BorderBrush="{x:Null}" Click="CloseButton_Click">
             <TextBlock
                     TextWrapping="Wrap"
                     Text="1"
@@ -90,7 +90,7 @@
                 VerticalAlignment="Top"
 
               
-                Background="#FFF7ABFF" BorderBrush="{x:Null}" Foreground="{x:Null}">
+                Background="#FFF7ABFF" BorderBrush="{x:Null}" Foreground="{x:Null}" Click="CloseButton_Click">
             <TextBlock
                     TextWrapping="Wrap"
                     Text="r"

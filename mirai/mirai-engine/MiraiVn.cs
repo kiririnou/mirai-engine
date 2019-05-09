@@ -15,8 +15,8 @@ namespace mirai_engine
 
         public struct vnContent
         {
-            public string CharName { get; set; }
-            public string Dialogue { get; set; }
+            public string ContentName { get; set; }
+            public string ContentText { get; set; }       
         }
 
         public MiraiVn(string path,List<MainWindow.fileContent> bg,List<MainWindow.fileContent> sprite)
@@ -29,15 +29,14 @@ namespace mirai_engine
         public void SetResources(ref string[] ProjectLines,ref int LineReaded,ref string []sprite,ref string bg,ref List<vnContent> dialogue)
         {      
             int spriteCount = 0;
-
             string TempName=null;
-
             string TempCommand= "#Add";
 
             while(TempCommand.Contains("#Add")&&TempCommand!=null)
             {
                 TempCommand = ProjectLines[LineReaded];
 
+                //manage images
                 if (TempCommand.Contains("#Add bg"))
                 {
                     var result = BgContent.Find(x => x.path.Contains(TempCommand.Replace("#Add bg=", "")));
@@ -50,6 +49,22 @@ namespace mirai_engine
 
                     spriteCount++;
                 }
+
+                //manage command(event)
+                else if(TempCommand.Contains("#Add event=Hide"))
+                {                   
+                    dialogue.Add(new vnContent { ContentName = "#Hide", ContentText = TempCommand.Replace("#Add event=Hide.","")});
+                }
+                else if(TempCommand.Contains("#Add event=Show1"))
+                {
+                    dialogue.Add(new vnContent { ContentName = "#Show1", ContentText = TempCommand.Replace("#Add event=Show1.", "") });
+                }
+                else if (TempCommand.Contains("#Add event=Show2"))
+                {
+                    dialogue.Add(new vnContent { ContentName = "#Show2", ContentText = TempCommand.Replace("#Add event=Show2.", "") });
+                }
+
+                //manage text
                 else if(TempCommand.Contains("#Add name"))
                 {
                     if(TempCommand.Replace("#Add name=","")!=TempName)
@@ -57,13 +72,20 @@ namespace mirai_engine
                         TempName = TempCommand.Replace("#Add name=", "");
                     }
                 }
-                else if(TempCommand.Contains("Add text"))
+                else if(TempCommand.Contains("#Add text"))
                 {
-                    dialogue.Add(new vnContent { CharName = TempName, Dialogue = TempCommand.Replace("#Add text=", "") });
+                    dialogue.Add(new vnContent { ContentName = TempName, ContentText = TempCommand.Replace("#Add text=", "")});                    
+                }
+
+                else if (TempCommand.Equals("end"))
+                {
+                    break;
                 }
 
                 LineReaded++;
-            }
-        }       
+            }            
+        }
+
+
     }
 }

@@ -241,6 +241,16 @@ namespace mirai_engine
         private void StopDebug_Click(object sender, RoutedEventArgs e)
         {
             
-        }       
+        }
+
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void MinimizateButton_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Maximized;
+        }
     }
 }
