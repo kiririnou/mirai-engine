@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using System.Collections;
 using System.IO;
 using System.Text.RegularExpressions;
+using WMPLib;
 
 namespace mirai_engine
 {
@@ -23,20 +24,23 @@ namespace mirai_engine
     /// </summary>
     public partial class DebugWindow : Window
     {
-        MiraiVn mirai;
-        List<MainWindow.fileContent> BgContent = new List<MainWindow.fileContent>();
-        List<MainWindow.fileContent> SpriteContent = new List<MainWindow.fileContent>();
-        string VnPath;
-        string[] ProjectLines;      
+        readonly MiraiVn mirai;
+        private List<MainWindow.fileData> BgContent = new List<MainWindow.fileData>();
+        private List<MainWindow.fileData> SpriteContent = new List<MainWindow.fileData>();
+        private List<MainWindow.fileData> MusicContent = new List<MainWindow.fileData>();
+        readonly string VnPath;
+        private string[] ProjectLines;
 
-        //temp window resouces
+        private readonly WindowsMediaPlayer wplayer = new WindowsMediaPlayer();
+
+        //temp window resources
         List<MiraiVn.vnContent> DialogueVn = new List<MiraiVn.vnContent>();
         string[] VnSprite = new string[10];
-        string VnBg;
+        private string VnBg;
+        private string VnMusic;
+        private int LineReaded;
 
-        int LineReaded;
-
-        public DebugWindow(MiraiVn novel, string path, List<MainWindow.fileContent> bg,List<MainWindow.fileContent> sprite)
+        public DebugWindow(MiraiVn novel, string path, List<MainWindow.fileData> bg,List<MainWindow.fileData> sprite,List<MainWindow.fileData> music)
         {
             InitializeComponent();
 
@@ -44,6 +48,7 @@ namespace mirai_engine
             VnPath = path;
             BgContent = bg;
             SpriteContent = sprite;
+            MusicContent = music;
             LineReaded = 0;
 
             LoadNovel();          
@@ -74,10 +79,10 @@ namespace mirai_engine
             {
                 tempCommand = ProjectLines[LineReaded];
              
-                if (tempCommand.Equals("new-scene"))
+                if (tempCommand.Contains("new-scene"))
                 {                   
                     LineReaded++;
-                    mirai.SetResources(ref ProjectLines, ref LineReaded, ref VnSprite, ref VnBg, ref DialogueVn);
+                    mirai.SetResources(ref ProjectLines, ref LineReaded, ref VnSprite, ref VnBg, ref VnMusic, ref DialogueVn);
 
                     StartNovel();
                 }                                  
@@ -88,36 +93,44 @@ namespace mirai_engine
             }
         }
 
+        private void SetResouces(Image img,string imgPath)
+        {
+            BitmapImage bgImage = new BitmapImage();
+            bgImage.BeginInit();
+            bgImage.UriSource = new Uri(imgPath, UriKind.Absolute);
+            bgImage.EndInit();
+            img.Source = bgImage;
+        }
+
         void StartNovel()
         {
             dialogueCount = 0;
+            //bg
+            SetResouces(backgroundImg, VnBg);
 
-            BitmapImage bgImage = new BitmapImage();
-            bgImage.BeginInit();        
-            bgImage.UriSource = new Uri(VnBg, UriKind.Absolute);
-            bgImage.EndInit();            
-            backgroundImg.Source = bgImage;
+            //muisc
+            if (VnMusic != null)
+            {
+                wplayer.URL = VnMusic;
+                wplayer.controls.play();
+            }
+            else
+            {
+                wplayer.controls.stop();
+            }
 
+            //sprite
             if (VnSprite[0] != null)
             {
-                BitmapImage sprite1Image = new BitmapImage();
-                sprite1Image.BeginInit();
-                sprite1Image.UriSource = new Uri(VnSprite[0], UriKind.Absolute);
-                sprite1Image.EndInit();
-                SpriteImg1.Source = sprite1Image;
+                SetResouces(SpriteImg1, VnSprite[0]);
             }
             else
             {
                 SpriteImg1.Source = null;
             }
-
             if (VnSprite[1] != null)
             {
-                BitmapImage sprite2Image = new BitmapImage();
-                sprite2Image.BeginInit();
-                sprite2Image.UriSource = new Uri(VnSprite[1], UriKind.Absolute);
-                sprite2Image.EndInit();
-                SpriteImg2.Source = sprite2Image;
+                SetResouces(SpriteImg2, VnSprite[1]);
             }
             else
             {
@@ -155,6 +168,8 @@ namespace mirai_engine
                     DialogueVn.Clear();
                     VnSprite[0] = null;
                     VnSprite[1] = null;
+                    VnBg = null;
+                    VnMusic = null;
 
                     LineReaded++;
                     LoadNovel();

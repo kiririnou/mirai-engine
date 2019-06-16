@@ -9,9 +9,10 @@ namespace mirai_engine
 {
     public class MiraiVn
     {
-        string FilePath;
-        List<MainWindow.fileContent> BgContent = new List<MainWindow.fileContent>();
-        List<MainWindow.fileContent> SpriteContent = new List<MainWindow.fileContent>();
+        private string FilePath;
+        private List<MainWindow.fileData> BgContent = new List<MainWindow.fileData>();
+        private List<MainWindow.fileData> SpriteContent = new List<MainWindow.fileData>();
+        private List<MainWindow.fileData> MusicContent = new List<MainWindow.fileData>();
 
         public struct vnContent
         {
@@ -19,14 +20,38 @@ namespace mirai_engine
             public string ContentText { get; set; }       
         }
 
-        public MiraiVn(string path,List<MainWindow.fileContent> bg,List<MainWindow.fileContent> sprite)
+        public MiraiVn(string path,List<MainWindow.fileData> bg,List<MainWindow.fileData> sprite,List<MainWindow.fileData> muisc)
         {
             FilePath = path;
             BgContent = bg;
             SpriteContent = sprite;
+            MusicContent = muisc;
         }
 
-        public void SetResources(ref string[] ProjectLines,ref int LineReaded,ref string []sprite,ref string bg,ref List<vnContent> dialogue)
+        public string[] GetProjectLines(out int LineEnd)
+        {
+            string[] tempStr =  File.ReadAllLines(FilePath);
+            string[] lines = new string[tempStr.Length];
+
+            int lineCount = 0;
+
+            foreach (string line in tempStr)
+            {
+                if (line != "")
+                {
+                    lines[lineCount] = line;
+                    lineCount++;
+                }
+                else if (line == "...")
+                {
+                    break;
+                }
+            }
+            LineEnd = lineCount-1;
+            return lines;
+        }
+
+        public void SetResources(ref string[] ProjectLines,ref int LineReaded,ref string []sprite,ref string bg, ref string music,ref List<vnContent> dialogue)
         {      
             int spriteCount = 0;
             string TempName=null;
@@ -48,6 +73,13 @@ namespace mirai_engine
                     sprite[spriteCount]= result.path;
 
                     spriteCount++;
+                }
+
+                //manage muisc
+                else if(TempCommand.Contains("#Add muisc"))
+                {
+                    var result = MusicContent.Find(x => x.path.Contains(TempCommand.Replace("#Add muisc=", "")));
+                    music = result.path;
                 }
 
                 //manage command(event)

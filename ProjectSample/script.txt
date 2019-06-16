@@ -1,0 +1,93 @@
+new-scene
+
+
+#Add bg=3bg
+
+#Add sprite=nico
+
+#Add sprite=nico
+#Add sprite=bernkastel1
+
+#Add muisc=Sleep Away
+
+#Add name=Nico
+#Add text=Physicist,Metaphysician, Poet, duellistand, musician, And Voyager to the Heavens
+#Add text=Master of how to answer-back
+
+#Add name=Bernkastel
+#Add text=A Lover too - but not to his gain! 
+#Add text=Here lies Hercule Savinien
+
+
+#Add event=Hide.2
+
+#Add name=Nico
+#Add text=De Cyrano de Bergerac, Who was all things, and all in vain
+
+#Add event=Show2.3
+
+#Add name=Nico
+#Add text=Physicist,Metaphysician, Poet, duellistand, musician, And Voyager to the Heavens
+#Add text=Master of how to answer-back
+
+#Add name=Bernkastel
+#Add text=A Lover too - but not to his gain! 
+#Add text=Here lies Hercule Savinien
+
+
+end
+
+
+new-scene
+
+
+#Add bg=1bg
+
+#Add sprite=bernkastel1
+#Add sprite=nico
+
+#Add music=Sleep Away
+
+#Add name=Nico
+#Add text=132123124234234234
+
+#Add name=Nico
+#Add text=9999999999999
+
+#Add name=Nico
+#Add text=De Cyrano de Bergerac, Who was all things, and all in vain
+
+#Add name=Bernkastel
+#Add text=A Lover too - but not to his gain! 
+#Add text=Here lies Hercule Savinien
+
+
+end
+
+
+new-scene
+
+
+#Add bg=2bg
+
+#Add sprite=berkastel2
+#Add sprite=nico
+
+#Add name=Nico
+#Add text=Physicist,Metaphysician, Poet, duellistand, musician, And Voyager to the Heavens
+#Add text=Master of how to answer-back
+
+#Add name=Bernkastel
+#Add text=A Lover too - but not to his gain! 
+#Add text=Here lies Hercule Savinien
+
+
+#Add name=Nico
+#Add text=De Cyrano de Bergerac, Who was all things, and all in vain
+
+end
+
+
+...
+...
+...

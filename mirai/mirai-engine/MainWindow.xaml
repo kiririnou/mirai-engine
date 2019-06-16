@@ -12,6 +12,7 @@
 
     <Grid Background="#FF36393F" Margin="0,0,2,-3">
         <Rectangle Fill="#FF2F3136" HorizontalAlignment="Left" Height="641" VerticalAlignment="Top" Width="342" Margin="987,28,0,0"/>
+        <Rectangle Fill="#FF2F3136" HorizontalAlignment="Left" Height="641" VerticalAlignment="Top" Width="38" Margin="10,28,0,0"/>
         <TreeView x:Name="FolderView" Margin="989,40,10,117" Background="#FF2F3136" BorderBrush="{x:Null}" Foreground="{x:Null}">
             <TreeView.Resources>
 
@@ -38,10 +39,10 @@
         <Menu IsMainMenu="True" Height="23" VerticalAlignment="Top" Background="{x:Null}" Margin="10,3,98,0" OpacityMask="Black" Foreground="#FFF05BFF" >
 
             <MenuItem Header="_File" Margin="0,1" Foreground="#FFF05BFF" Background="{x:Null}">
-                <MenuItem Header="_New Project" Background="#FF202225" Foreground="#FFF05BFF" />
+                <MenuItem Header="_New Project" Background="#FF202225" Foreground="#FFF05BFF" Click="NewProject_Click" />
                 <MenuItem Header="_Open Project"  Click="OpenProject_Click" Background="#FF202225"/>
-                <MenuItem x:Name="SaveMenu" Header="_Save Project" IsEnabled="False" Background="#FF202225" />
-                <MenuItem x:Name="SaveAsMenu" Header="_Save Project As"  IsEnabled="False" Background="#FF202225"/>
+                <MenuItem x:Name="SaveMenu" Header="_Save Project" IsEnabled="False" Background="#FF202225" Click="SaveMenu_Click" />
+                <MenuItem x:Name="SaveAsMenu" Header="_Save Project As"  IsEnabled="False" Background="#FF202225" Click="SaveAsMenu_Click"/>
                 <MenuItem Header="_Exit" Background="#FF202225" />
             </MenuItem>
             <MenuItem Header="_Edit" Margin="10,1,0,1" Foreground="#FFF05BFF">
@@ -99,5 +100,10 @@
                     FontSize="16" />
         </Button>
         <TextBox x:Name="ConsoleTextBox" HorizontalAlignment="Left" Height="89" Margin="10,580,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="967" BorderBrush="{x:Null}" Background="#FF484B52"/>
+        <Button x:Name="NewSceneButton" Content="scene" HorizontalAlignment="Left" Margin="10,40,0,0" VerticalAlignment="Top" Width="38" Click="NewScene_Click" Height="38"/>
+        <Button x:Name="NewEventButton" Content="event" HorizontalAlignment="Left" Margin="10,83,0,0" VerticalAlignment="Top" Width="38" Height="37"/>
+        <TextBox x:Name="ItemNameTextBox" HorizontalAlignment="Left" Height="23" Margin="79,40,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Background="#FF484B52" BorderBrush="{x:Null}" Foreground="White"/>
+        <TextBox x:Name="ItemContextTextBox" HorizontalAlignment="Left" Height="155" Margin="79,83,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="207" Background="#FF484B52" BorderBrush="{x:Null}" Foreground="White"/>
+        <Button x:Name="ApplyButton" Content="apply" HorizontalAlignment="Left" Margin="211,41,0,0" VerticalAlignment="Top" Width="75"/>
     </Grid>
 </Window>

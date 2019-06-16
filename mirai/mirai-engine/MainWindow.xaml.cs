@@ -17,6 +17,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml;
 using System.IO;
+using FolderBrowser;
 
 using Path = System.IO.Path;
 
@@ -27,21 +28,32 @@ namespace mirai_engine
     /// </summary>
     public partial class MainWindow : Window
     {
-        string ProjectFile;
-        string RootDir;
+        private string ProjectFile;
+        private string RootDir;
+        private int ProjectLineEnd;
+        private string[] projectLines;
 
-        MiraiVn Mirai;
-        DebugWindow debugWindow;
+        private MiraiVn Mirai;
+        private DebugWindow debugWindow;
+        private MiraiBuild miraiBuild; 
 
-        public struct fileContent
+        public struct fileData
         {
             public string dir { get; set; }
             public string path { get; set; }
         }
 
-        List <fileContent> BgContent = new List<fileContent>();
+        private List <fileData> BgData = new List<fileData>();
+        private List<fileData> SpriteData = new List<fileData>();
+        private List<fileData> MusicData = new List<fileData>();
 
-        List<fileContent> SpriteContent = new List<fileContent>();
+        public struct eventHierarchy
+        {
+            public object sceneName { get; set; }
+            public dynamic EventContetn { get; set; }
+        }
+
+        List<eventHierarchy> EventHierarchy = new List<eventHierarchy>();
 
         //hide window title bar
         #region
@@ -75,58 +87,101 @@ namespace mirai_engine
                 ProjectFile = FileLocation.FileName;
                 RootDir = ProjectFile.Substring(0, ProjectFile.LastIndexOf("\\"));
 
+                Mirai = new MiraiVn(ProjectFile, BgData, SpriteData, MusicData);
+                miraiBuild = new MiraiBuild(ProjectFile);
+
                 ShowDir(RootDir);
 
-                Mirai = new MiraiVn(ProjectFile, BgContent, SpriteContent);
+                SaveAsMenu.IsEnabled = true;
             }
         }
         
         private void ShowDir(string path)
         {
-            foreach (var drive in Directory.GetDirectories(path))
+            projectLines = Mirai.GetProjectLines(out ProjectLineEnd);  
+            bool canWrite = false;
+            List<string> tempStr = new List<string>();
+            string tempName=null;
+
+            //separate project lines
+            foreach (string line in projectLines)
             {
+                try
+                {
+                    if (line.Contains("new-scene")||canWrite&&!line.Contains("end"))
+                    {
+                        if(canWrite)
+                        {
+                            tempStr.Add(line.Replace("#Add ",""));
+                        }
+                        else
+                        {
+                            tempName = line.Replace("new-", "");
+                            canWrite = true;
+                        }
+                    }
+                    if(line.Contains("end"))
+                    {
+                        EventHierarchy.Add(new eventHierarchy { sceneName = tempName, EventContetn = tempStr.ToArray()});
+                        tempStr.Clear();
+                        canWrite = false;
+                    }
+                }
+                catch (Exception) { }
+            }
+
+            int sceneCount = 0;
+            foreach (var line in EventHierarchy)
+            { 
                 var item = new TreeViewItem()
                 {
-                    // Set the header
-                    Header = Path.GetFileName(drive),
-                    // And the full path
-                    Tag = drive
-                };               
+                    Header = line.sceneName,
+
+                    Tag = sceneCount
+                };
+                sceneCount++;
 
                 // Add a dummy item
                 item.Items.Add(null);
 
                 // Listen out for item being expanded
-                item.KeyDown += Folder_Expanded;
+                item.Expanded += Folder_Expanded;
 
-                //Separate file 
+                FolderView.Items.Add(item);
+            }
+
+            //get resources
+            foreach (var drive in Directory.GetDirectories(path))
+            {
                 DirectoryInfo dir = new DirectoryInfo(drive);
                 FileInfo[] Files = dir.GetFiles();
 
-                if(Path.GetFileName(drive) == "Bg")
+                if (Path.GetFileName(drive) == "Bg")
                 {
-                    foreach(var file in Files)
+                    foreach (var file in Files)
                     {
-                        BgContent.Add(new fileContent { dir = Path.GetFileName(drive), path = file.FullName });
+                        BgData.Add(new fileData { dir = Path.GetFileName(drive), path = file.FullName });
                     }
                 }
-
-                else if(Path.GetFileName(drive) == "Sprite")
+                else if (Path.GetFileName(drive) == "Sprite")
                 {
-                    foreach(var file in Files)
+                    foreach (var file in Files)
                     {
-                        SpriteContent.Add(new fileContent { dir = Path.GetFileName(drive), path = file.FullName });
+                        SpriteData.Add(new fileData { dir = Path.GetFileName(drive), path = file.FullName });
                     }
                 }
-              
-                FolderView.Items.Add(item);
-            }
+                else if (Path.GetFileName(drive) == "Music")
+                {
+                    foreach (var file in Files)
+                    {
+                        MusicData.Add(new fileData { dir = Path.GetFileName(drive), path = file.FullName });
+                    }
+                }
+            }           
         }
 
         private void Folder_Expanded(object sender, RoutedEventArgs e)
         {
-            #region Initial Checks
-
             var item = (TreeViewItem)sender;
 
             // If the item only contains the dummy data
@@ -135,71 +190,24 @@ namespace mirai_engine
 
             item.Items.Clear();
 
-            var fullPath = (string)item.Tag;
+            int sceneCount = Convert.ToInt32(item.Tag);
 
-            #endregion
+            eventHierarchy sceneData = EventHierarchy[sceneCount];
 
-            #region Get Folders
-
-            var directories = new List<string>();
-
-            // Try and get directories from the folder
-            // ignoring any issues doing so
-            try
-            {
-                var dirs = Directory.GetDirectories(fullPath);
-
-                if (dirs.Length > 0)
-                    directories.AddRange(dirs);
-            }
-            catch { }
-
-            directories.ForEach(directoryPath =>
+            foreach(var line in sceneData.EventContetn)
             {
                 var subItem = new TreeViewItem()
                 {
-                    Header = GetFileFolderName(directoryPath),
-
-                    Tag = directoryPath
+                    Header = line,
+                    Tag = sceneCount
                 };
 
-                subItem.Items.Add(null);
+                item.Items.Add(null);
 
-                // Handle expanding
-                subItem.Expanded += Folder_Expanded;
-
-                item.Items.Add(subItem);
-            });
-
-            #endregion
-
-            #region Get Files
-
-            var files = new List<string>();
-
-            // Try and get files from the folder
-            // ignoring any issues doing so
-            try
-            {
-                var fs = Directory.GetFiles(fullPath);
-
-                if (fs.Length > 0)
-                    files.AddRange(fs);
-            }
-            catch { }
-
-            files.ForEach(filePath =>
-            {
-                var subItem = new TreeViewItem()
-                {
-                    Header = GetFileFolderName(filePath),
-                    Tag = filePath
-                };               
+                item.PreviewMouseLeftButtonDown += MouseLeftButtonDown_Click;
 
                 item.Items.Add(subItem);
-            });
-
-            #endregion
+            }           
         }
 
         #region Helpers
@@ -229,18 +237,17 @@ namespace mirai_engine
             return path.Substring(lastIndex + 1);
         }
 
-        #endregion
-
+        #endregion    
 
         private void Degug_Click(object sender, RoutedEventArgs e)
         {
-            debugWindow = new DebugWindow(Mirai, ProjectFile, BgContent, SpriteContent);
+            debugWindow = new DebugWindow(Mirai, ProjectFile, BgData, SpriteData, MusicData);
             debugWindow.Show();        
         }
 
         private void StopDebug_Click(object sender, RoutedEventArgs e)
         {
-            
+            debugWindow.Close();
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
@@ -251,6 +258,73 @@ namespace mirai_engine
         private void MinimizateButton_Click(object sender, RoutedEventArgs e)
         {
             WindowState = WindowState.Maximized;
+        }
+        private void NewProject_Click(object sender, RoutedEventArgs e)
+        {   
+            RootDir = miraiBuild.GetDirPath();
+
+            Directory.CreateDirectory(RootDir + "\\Bg");
+            Directory.CreateDirectory(RootDir + "\\Sprite");
+            Directory.CreateDirectory(RootDir + "\\Music");
+
+            using (StreamWriter writer = new StreamWriter(RootDir + "\\Scenario.txt"))
+            {
+                writer.WriteLine("new-scene");
+                writer.WriteLine("end-scene");
+                writer.WriteLine("...");
+                writer.Close();
+            }
+        }
+
+        private void SaveMenu_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
+        private void SaveAsMenu_Click(object sender, RoutedEventArgs e)
+        {
+            miraiBuild.StartBuild(RootDir);            
+        }
+
+        //------------------------------------------novel interface---------------------------------------------------
+
+        private void MouseLeftButtonDown_Click(object sender, RoutedEventArgs e)
+        {
+            var item = (TreeViewItem)sender;
+
+            string itemData = item.Tag.ToString();
+
+            if (itemData.Contains("#Add event="))
+            {
+                if (itemData.Contains("Hide"))
+                {
+                    ItemNameTextBox.Text = "Hide";
+                }
+                else if (itemData.Contains("Show"))
+                {
+                    ItemNameTextBox.Text = "Show";
+                }
+                ItemContextTextBox.Text = itemData.Replace("Add event =", "");
+            }
+        }
+
+        private void NewScene_Click(object sender, RoutedEventArgs e)
+        {
+            using(StreamWriter writer = new StreamWriter(ProjectFile))
+            {
+                int count=0;
+               foreach(string line in projectLines)
+                {
+                    if (count == ProjectLineEnd)
+                    {
+                        writer.WriteLine("new-scene");
+                        writer.WriteLine("end");
+                    }
+                    writer.WriteLine(line);
+                    count++;
+                }
+
+                writer.Close();
+            }
         }
     }
 }
