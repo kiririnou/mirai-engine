@@ -173,7 +173,7 @@ namespace mirai_engine
             //rebuild
             //ExecuteCommandSync(@"C:\Windows\Microsoft.NET\Framework\v4.0.30319\msbuild.exe "+projectFileName);
 
-            RemoveBuildFile(toPath);
+            //RemoveBuildFile(toPath);
         }
         
         public static void ExecuteCommandSync(object command)

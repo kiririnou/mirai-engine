@@ -102,8 +102,7 @@
         <TextBox x:Name="ConsoleTextBox" HorizontalAlignment="Left" Height="89" Margin="10,580,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="967" BorderBrush="{x:Null}" Background="#FF484B52"/>
         <Button x:Name="NewSceneButton" Content="scene" HorizontalAlignment="Left" Margin="10,40,0,0" VerticalAlignment="Top" Width="38" Click="NewScene_Click" Height="38"/>
         <Button x:Name="NewEventButton" Content="event" HorizontalAlignment="Left" Margin="10,83,0,0" VerticalAlignment="Top" Width="38" Height="37"/>
-        <TextBox x:Name="ItemNameTextBox" HorizontalAlignment="Left" Height="23" Margin="79,40,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Background="#FF484B52" BorderBrush="{x:Null}" Foreground="White"/>
-        <TextBox x:Name="ItemContextTextBox" HorizontalAlignment="Left" Height="155" Margin="79,83,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="207" Background="#FF484B52" BorderBrush="{x:Null}" Foreground="White"/>
-        <Button x:Name="ApplyButton" Content="apply" HorizontalAlignment="Left" Margin="211,41,0,0" VerticalAlignment="Top" Width="75"/>
+        <TextBox x:Name="ItemContextTextBox" HorizontalAlignment="Left" Height="170" Margin="79,83,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="207" Background="#FF484B52" BorderBrush="{x:Null}" Foreground="White"/>
+        <Button x:Name="ApplyButton" Content="apply" HorizontalAlignment="Left" Margin="211,41,0,0" VerticalAlignment="Top" Width="75" Click="ApplyButton_Click"/>
     </Grid>
 </Window>

@@ -28,27 +28,47 @@ namespace mirai_engine
             MusicContent = muisc;
         }
 
-        public string[] GetProjectLines(out int LineEnd)
+        public List<MainWindow.eventHierarchy> GetProjectLines(out int LineEnd)
         {
+            List<MainWindow.eventHierarchy> projectLines = new List<MainWindow.eventHierarchy>();
+            List<MainWindow.eventHierarchy> TempLinesArray = null;
+
             string[] tempStr =  File.ReadAllLines(FilePath);
-            string[] lines = new string[tempStr.Length];
 
             int lineCount = 0;
+            int sceneCount = 0;
+
+            string tempName=null;
 
             foreach (string line in tempStr)
             {
-                if (line != "")
-                {
-                    lines[lineCount] = line;
+                if (line != "...")
+                {                   
+                    if (line.Contains("new-"))
+                    {
+                        tempName = line.Replace("new-", "");
+
+                        //try to fix
+                        TempLinesArray = new List<MainWindow.eventHierarchy>();
+                    }
+                    else if (line == "end")
+                    {
+                        projectLines.Add(new MainWindow.eventHierarchy {sceneName = tempName, EventContetn = TempLinesArray,sceneCount = sceneCount});
+                        sceneCount++;
+                    }
+                    else
+                    {
+                        TempLinesArray.Add(new MainWindow.eventHierarchy{sceneName = line,sceneCount = lineCount});
+                    }                    
                     lineCount++;
                 }
-                else if (line == "...")
+                else
                 {
                     break;
                 }
             }
             LineEnd = lineCount-1;
-            return lines;
+            return projectLines;
         }
 
         public void SetResources(ref string[] ProjectLines,ref int LineReaded,ref string []sprite,ref string bg, ref string music,ref List<vnContent> dialogue)
@@ -75,10 +95,10 @@ namespace mirai_engine
                     spriteCount++;
                 }
 
-                //manage muisc
-                else if(TempCommand.Contains("#Add muisc"))
+                //manage music
+                else if(TempCommand.Contains("#Add music"))
                 {
-                    var result = MusicContent.Find(x => x.path.Contains(TempCommand.Replace("#Add muisc=", "")));
+                    var result = MusicContent.Find(x => x.path.Contains(TempCommand.Replace("#Add music=", "")));
                     music = result.path;
                 }
 

@@ -31,7 +31,7 @@ namespace mirai_engine
         private string ProjectFile;
         private string RootDir;
         private int ProjectLineEnd;
-        private string[] projectLines;
+        private List<eventHierarchy> ProjectLines;
 
         private MiraiVn Mirai;
         private DebugWindow debugWindow;
@@ -49,8 +49,10 @@ namespace mirai_engine
 
         public struct eventHierarchy
         {
-            public object sceneName { get; set; }
-            public dynamic EventContetn { get; set; }
+            public string sceneName { get; set; }
+            public List<eventHierarchy> EventContetn { get; set; }
+
+            public int sceneCount { get; set; }
         }
 
         List<eventHierarchy> EventHierarchy = new List<eventHierarchy>();
@@ -98,48 +100,16 @@ namespace mirai_engine
         
         private void ShowDir(string path)
         {
-            projectLines = Mirai.GetProjectLines(out ProjectLineEnd);  
-            bool canWrite = false;
-            List<string> tempStr = new List<string>();
-            string tempName=null;
-
-            //separate project lines
-            foreach (string line in projectLines)
-            {
-                try
-                {
-                    if (line.Contains("new-scene")||canWrite&&!line.Contains("end"))
-                    {
-                        if(canWrite)
-                        {
-                            tempStr.Add(line.Replace("#Add ",""));
-                        }
-                        else
-                        {
-                            tempName = line.Replace("new-", "");
-                            canWrite = true;
-                        }
-                    }
-                    if(line.Contains("end"))
-                    {
-                        EventHierarchy.Add(new eventHierarchy { sceneName = tempName, EventContetn = tempStr.ToArray()});
-                        tempStr.Clear();
-                        canWrite = false;
-                    }
-                }
-                catch (Exception) { }
-            }
-
-            int sceneCount = 0;
-            foreach (var line in EventHierarchy)
+            ProjectLines = Mirai.GetProjectLines(out ProjectLineEnd);  
+ 
+            foreach (var line in ProjectLines)
             { 
                 var item = new TreeViewItem()
                 {
                     Header = line.sceneName,
 
-                    Tag = sceneCount
+                    Tag = line.sceneCount
                 };
-                sceneCount++;
 
                 // Add a dummy item
                 item.Items.Add(null);
@@ -192,22 +162,37 @@ namespace mirai_engine
 
             int sceneCount = Convert.ToInt32(item.Tag);
 
-            eventHierarchy sceneData = EventHierarchy[sceneCount];
+            eventHierarchy sceneData = ProjectLines[sceneCount];
 
+            int LineCount = 0;
             foreach(var line in sceneData.EventContetn)
-            {
+            { 
                 var subItem = new TreeViewItem()
                 {
-                    Header = line,
-                    Tag = sceneCount
-                };
-
-                item.Items.Add(null);
-
-                item.PreviewMouseLeftButtonDown += MouseLeftButtonDown_Click;
+                    Header = line.sceneName,
+                    Tag = line.sceneCount
+                };                             
 
                 item.Items.Add(subItem);
+
+                subItem.PreviewMouseLeftButtonDown += MouseLeftButtonDown;
+
+                LineCount++;
             }           
+        }
+
+        private void MouseLeftButtonDown(object sender,RoutedEventArgs e)
+        {
+            var item = (TreeViewItem)sender;           
+
+            item.Items.Clear();
+
+            oldScriptLine = Convert.ToInt32(item.Tag);
+            oldScriptItem = item;
+
+            ItemContextTextBox.Text = item.Header.ToString();
+          
+
         }
 
         #region Helpers
@@ -285,45 +270,53 @@ namespace mirai_engine
             miraiBuild.StartBuild(RootDir);            
         }
 
-        //------------------------------------------novel interface---------------------------------------------------
+        //------------------------------------------novel interface---------------------------------------------------    
 
-        private void MouseLeftButtonDown_Click(object sender, RoutedEventArgs e)
-        {
-            var item = (TreeViewItem)sender;
-
-            string itemData = item.Tag.ToString();
-
-            if (itemData.Contains("#Add event="))
-            {
-                if (itemData.Contains("Hide"))
-                {
-                    ItemNameTextBox.Text = "Hide";
-                }
-                else if (itemData.Contains("Show"))
-                {
-                    ItemNameTextBox.Text = "Show";
-                }
-                ItemContextTextBox.Text = itemData.Replace("Add event =", "");
-            }
-        }
+        private TreeViewItem oldScriptItem;
+        private int oldScriptLine;
 
         private void NewScene_Click(object sender, RoutedEventArgs e)
         {
             using(StreamWriter writer = new StreamWriter(ProjectFile))
             {
                 int count=0;
-               foreach(string line in projectLines)
+               for(int i=0;i<=ProjectLines.Count;i++)
                 {
                     if (count == ProjectLineEnd)
                     {
                         writer.WriteLine("new-scene");
                         writer.WriteLine("end");
                     }
-                    writer.WriteLine(line);
+                    //try to fix
+                    writer.WriteLine(ProjectLines[count].sceneName);
                     count++;
                 }
 
                 writer.Close();
+            }
+        }
+
+        private void ApplyButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (oldScriptItem.Header != ItemContextTextBox.Text)
+            {
+                string[] lines = File.ReadAllLines(ProjectFile);
+                using (StreamWriter writer = new StreamWriter(ProjectFile))
+                {
+                    for (int currentLine = 1; currentLine <= lines.Length; ++currentLine)
+                    {
+                        if (currentLine == oldScriptLine)
+                        {
+                            writer.WriteLine(ItemContextTextBox.Text);
+                        }
+                        else if(currentLine != oldScriptLine+1)
+                        {
+                            writer.WriteLine(lines[currentLine - 1]);
+                        }
+                    }
+                }
+
+                oldScriptItem.Header = ItemContextTextBox.Text;
             }
         }
     }
